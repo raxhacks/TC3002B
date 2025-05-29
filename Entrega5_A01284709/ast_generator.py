@@ -63,7 +63,7 @@ class FunctionCall(Statement):
 
 @dataclass
 class PrintStatement(Statement):
-    items: List[Union['Expression', str]]  # Can be expressions or string literals
+    items: List[Union['Expression', str]]
 
 # Expressions
 @dataclass

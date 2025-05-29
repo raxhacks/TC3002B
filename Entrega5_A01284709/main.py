@@ -74,7 +74,7 @@ main {
         a = 0;
         b = 1;
         count = 2;
-        while (count < n) do {
+        while (count < n+1) do {
             temp = a+b;
             a = b;
             b = temp;
@@ -82,6 +82,45 @@ main {
         };
         print("Fibonacci of", n, "is", b);
     };
+}
+end
+'''
+
+test5 = '''
+program fibonacci;
+var input: int;
+void print_fibonacci(n: int, b:int) [
+    {
+        print("Fibonacci of", n, "is", b);
+    }
+];
+void fibonacci(n: int) [
+var a,b,count,temp : int;
+{
+    if (n < 0) {
+        print("Error: n must be greater than 0");
+    };
+    if (n < 1) {
+        print_fibonacci(n,0);
+    };
+    if (n < 2) {
+        print_fibonacci(n,1);
+    } else {
+        a = 0;
+        b = 1;
+        count = 2;
+        while (count < n+1) do {
+            temp = a+b;
+            a = b;
+            b = temp;
+            count = count + 1;
+        };
+        print_fibonacci(n,b);
+    };
+}];
+main {
+    input = 10;
+    fibonacci(input);
 }
 end
 '''

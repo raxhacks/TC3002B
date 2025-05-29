@@ -117,7 +117,9 @@ class SemanticAnalyzer:
                         'scope': 'global',
                         'address': address
                     }
-            
+
+            self.quadruples.insert(0, ('MAIN_START', None, None, None))
+
             # procesamos las funciones en dado de que existan
             functions = ast_node.functions if isinstance(ast_node.functions, list) else []
             for func in functions:
@@ -127,7 +129,6 @@ class SemanticAnalyzer:
                     print(f"Warning: Skipping non-Function node in functions list: {type(func)}")
             
             # comenzamos con el MAIN_START que apuntara a la primera instruccion del main
-            self.quadruples.insert(0, ('MAIN_START', None, None, None))
             self.main_start_quad = len(self.quadruples)
             
             # procesamos el main
@@ -388,6 +389,8 @@ class SemanticAnalyzer:
                     'address': address
                 }
                 self.function_directory[func_node.name]['vars'][name] = var_decl.type
+                
+        self.function_directory[func_node.name]['vars_addresses'] = {name: var['address'] for name, var in self.current_scope_vars.items()}
         
         # procesamos el cuerpo de la funcion
         self.process_ast(func_node.body)

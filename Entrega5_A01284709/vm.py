@@ -49,18 +49,31 @@ class VirtualMachine:
                 continue
                 
             elif op == 'ENDFUNC':
-                # regresamos de la funcion
-                if self.call_stack:
-                    self.pc = self.call_stack.pop()
+                # Restaura el contexto anterior
+                if self.func_stack:
+                    context = self.func_stack.pop()
+                    self.local_memory = context['local_memory']
+                    self.temp_memory = context['temp_memory']
+                    self.param_mapping = context['param_mapping']
+                    self.pc = self.call_stack.pop() if self.call_stack else self.pc + 1
                 else:
                     self.pc += 1
                 continue
+
                 
             elif op == 'ERA':
-                # preparamos para la llamada a la funcion y limpiamos la memoria local
+                # Guarda el contexto actual
+                self.func_stack.append({
+                    'local_memory': dict(self.local_memory),
+                    'temp_memory': dict(self.temp_memory),
+                    'param_mapping': dict(self.param_mapping),
+                })
                 self.local_memory = {}
+                self.temp_memory = {}
+                self.param_mapping = {}
                 self.pc += 1
                 continue
+
                 
             elif op == 'PARAM':
                 # asignamos el valor del parametro en la memoria local
@@ -71,11 +84,16 @@ class VirtualMachine:
                 continue
                 
             elif op == 'GOSUB':
-                # guardamos la direccion de retorno y saltamos a la funcion
                 self.call_stack.append(self.pc + 1)
                 func_info = self.function_directory[quad[1]]
                 self.pc = func_info['start_quad']
+                # Inicializa variables locales de la función llamada
+                vars_addresses = func_info["vars_addresses"]
+                for k, v in vars_addresses.items():
+                    if v not in self.local_memory:
+                        self.local_memory[v] = 0
                 continue
+
                 
             elif op == '=':
                 src_value = self.get_value(quad[1])
@@ -128,6 +146,10 @@ class VirtualMachine:
                 if not condition:
                     self.pc = quad[3]
                     continue
+
+                self.pc += 1
+                continue
+
                 
             elif op == 'GOTO':
                 self.pc = quad[3]
@@ -174,6 +196,14 @@ class VirtualMachine:
         # checamos la memoria temporal
         if address in self.temp_memory:
             return self.temp_memory[address]
+        
+        # current context stack
+        if address in self.func_stack[-1]["local_memory"]:
+            return self.func_stack[-1]["local_memory"][address]
+        if address in self.func_stack[-1]["temp_memory"]:
+            return self.func_stack[-1]["temp_memory"][address]
+        if address in self.func_stack[-1]["param_mapping"]:
+            return self.func_stack[-1]["param_mapping"][address]
             
         raise ValueError(f"Unknown address: {address}")
 
