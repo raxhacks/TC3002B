@@ -8,11 +8,14 @@ program myprog;
 var id1,x,y : int; id2: float;
 main {
     x = 12;
-    id2 = 1*3-4-2;
+    id2 = 1-4/2;
+    print("hi:",id2);
     if (1 > 0) {
         y = 1;
+        print("Okay si se imprime");
     } else {
         y = 0;
+        print("hioakakaokaokoakaoakoa");
     };
 }
 end
@@ -88,12 +91,32 @@ end
 
 test5 = '''
 program fibonacci;
-var input: int;
+var input, input2: int;
 void print_fibonacci(n: int, b:int) [
     {
         print("Fibonacci of", n, "is", b);
     }
 ];
+void print_factorial(n: int, b:int) [
+    {
+        print("Factorial of", n, "is", b);
+    }
+];
+void factorial(n: int) [
+var result, i: int;
+{
+    if (n < 0) {
+        print("Error: n must be greater than 0");
+    } else {
+        result = 1;
+        i = 1;
+        while (i < n + 1) do {
+            result = result * i;
+            i = i + 1;
+        };
+        print_factorial(n, result);
+    };
+}];
 void fibonacci(n: int) [
 var a,b,count,temp : int;
 {
@@ -120,10 +143,77 @@ var a,b,count,temp : int;
 }];
 main {
     input = 10;
-    fibonacci(input);
+    input2=20;
+    fibonacci(input2);
+    factorial(input);
 }
 end
 '''
+
+test6="""
+program fibonacci_factorial;
+var input: int;
+
+void print_fibonacci(n: int, b: int) [
+    {
+        print("Fibonacci of", n, "is", b);
+    }
+];
+
+void print_factorial(n: int, b: int) [
+    {
+        print("Factorial of", n, "is", b);
+    }
+];
+
+void fibonacci(n: int) [
+var a, b, count, temp: int;
+{
+    if (n < 0) {
+        print("Error: n must be greater than 0");
+    };
+    if (n < 1) {
+        print_fibonacci(n, 0);
+    };
+    if (n < 2) {
+        print_fibonacci(n, 1);
+    } else {
+        a = 0;
+        b = 1;
+        count = 2;
+        while (count < n + 1) do {
+            temp = a + b;
+            a = b;
+            b = temp;
+            count = count + 1;
+        };
+        print_fibonacci(n, b);
+    };
+}];
+
+void factorial(n: int) [
+var result, i: int;
+{
+    if (n < 0) {
+        print("Error: n must be greater than 0");
+    } else {
+        result = 1;
+        i = 1;
+        while (i < n + 1) do {
+            result = result * i;
+            i = i + 1;
+        };
+        print_factorial(n, result);
+    };
+}];
+
+main {
+    input = 10;
+    fibonacci(input);
+    factorial(input);
+}
+end
+"""
 
 tests = [
     {'name': 'Test 1', 'code': test1},
